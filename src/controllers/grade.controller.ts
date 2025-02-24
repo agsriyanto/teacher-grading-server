@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../db";
 import { AuthRequest } from "../middlewares/auth.middleware";
+import { Role } from "../enums";
 
 export const submitGrade = async (
   req: Request,
@@ -45,36 +46,37 @@ export const getStudentGrades = async (
 ): Promise<void> => {
   try {
     const studentId = req.query.studentId as string;
-    console.log({req})
 
-    if (req.user?.role === "STUDENT" && req.user.id !== studentId) {
-      res
-        .status(403)
-        .json({ error: "Forbidden: You can only view your own grades" });
+    if (!req.user) {
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
-    const student = await prisma.user.findUnique({
-      where: { id: studentId },
-    });
-
-    if (!student) {
-      res.status(404).json({ error: "Student not found" });
-      return;
+    if (req.user.role === Role.STUDENT) {
+      if (!studentId || req.user.id !== studentId) {
+        res
+          .status(403)
+          .json({ error: "Forbidden: You can only view your own grades" });
+        return;
+      }
     }
+
+    const whereCondition =
+      req.user.role === Role.STUDENT
+        ? { assignment: { studentId: studentId } }
+        : {};
 
     const grades = await prisma.grade.findMany({
-      where: { assignment: { studentId } },
+      where: whereCondition,
       include: {
-        assignment: true,
+        assignment: {
+          include: {
+            student: { select: { id: true, name: true, email: true } },
+          },
+        },
         teacher: { select: { name: true, email: true } },
       },
     });
-
-    if (grades.length === 0) {
-      res.status(404).json({ error: "No grades found for this student" });
-      return;
-    }
 
     res.json(grades);
   } catch (error) {

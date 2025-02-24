@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import prisma from "../db";
+import { Role } from "../enums";
 
 export interface AuthRequest extends Request {
-  user?: { id: string; role: string };
+  user?: { id: string; role: Role };
 }
 
 export const authenticate = async (
@@ -31,7 +32,7 @@ export const authenticate = async (
       return;
     }
 
-    req.user = { id: user.id, role: user.role };
+    req.user = { id: user.id, role: user.role as Role };
     next();
   } catch (error) {
     console.error({error});

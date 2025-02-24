@@ -26,9 +26,14 @@ enum Role {
   TEACHER
 }
 
+enum Subject {
+  ENGLISH_WRITING
+  MATH_HOMEWORK
+}
+
 model Assignment {
   id        String @id @default(uuid())
-  subject   String
+  subject   Subject
   title     String
   content   String
   student   User   @relation(fields: [studentId], references: [id])
@@ -43,7 +48,7 @@ model Assignment {
 
 model Grade {
   id           String     @id @default(uuid())
-  grade        Float
+  grade        Int
   feedback     String
   teacher      User       @relation("TeacherGrades", fields: [teacherId], references: [id])
   teacherId    String
