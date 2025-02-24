@@ -1,8 +1,11 @@
 # Teacher Grading Server with Express
 
-A simple RESTful API built using **Node.js ** with the **TypeScript**, and **Express**.
+A simple RESTful API built using **Node.js** with the **TypeScript**, and **Express**.
 
 ---
+**API Documentation**  
+  [`https://documenter.getpostman.com/view/14405240/2sAYdcsXnC`](https://documenter.getpostman.com/view/14405240/2sAYdcsXnC) 
+
 
 ## **How to Use the App**
 
